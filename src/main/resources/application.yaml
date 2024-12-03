@@ -1,0 +1,44 @@
+camel:
+  component:
+    http:
+      connect-timeout: "1000"
+      connection-request-timeout: "10000"
+      connections-per-route: "300"
+      max-total-connections: "2600"
+  rest:
+    component: servlet
+    port: ${server.port:8080}
+
+    servlet:
+      mapping:
+        context-path:
+        enabled: true
+        servlet-name: CamelServlet
+
+
+atomic:
+  host: ${ATOMIC_HOST:sandbox.developer.go.ke}
+  method: GET
+  method2: POST
+  path: ${ATOMIC_PATH:/oauth2/v1/generate}
+  path2: ${ATOMIC_PATH:/v1/kra-pin/validate}
+  path3: ${ATOMIC_PATH:/mpesa/b2c/v1/paymentrequest}
+  timeout: ${ATOMIC_TIMEOUT:3000}
+  protocol: ${ATOMIC_PROTOCOL:https}
+  uri-params: ?grant_type=client_credentials&_locale=en&?bridgeEndpoint=true&httpMethod=${atomic.method2}&throwExceptionOnFailure=false&responseTimeout=${atomic.timeout}
+  uri-paramsDeposit: ?version=1.0.0&_locale=en&?bridgeEndpoint=true&httpMethod=${atomic.method2}&throwExceptionOnFailure=false&responseTimeout=${atomic.timeout}
+  uri: ${atomic.protocol}://${atomic.host}${atomic.path}${atomic.uri-params}
+  uriKraPin: ${atomic.protocol}://${atomic.host}${atomic.path2}${atomic.uri-paramsDeposit}
+  uriWithdrawal: ${atomic.protocol}://${atomic.host}${atomic.path3}${atomic.uri-paramsDeposit}
+
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: info, health, metrics
+  security:
+    enabled: false
+  server:
+    port: 8080
